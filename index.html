@@ -2,7 +2,7 @@
 <head>
 	<title>Javascript Box - OOP demo</title>
 </head>
-<body>
+<body onresize="updateWindowSize()">
 
 	<svg id="svg" xmlns="http://www.w3.org/2000/svg"></svg>
 
@@ -34,6 +34,19 @@
 				});
 
 			document.getElementById('svg').appendChild(circle);
+			/*increase screen size*/
+			var width = window.innerWidth
+			|| document.documentElement.clientWidth
+			|| document.body.clientWidth;
+
+			var height = window.innerHeight
+			|| document.documentElement.clientHeight
+			|| document.body.clientHeight;
+
+			document.getElementById('svg').style.width = width;
+			document.getElementById('svg').style.height = height;
+			document.getElementById('svg').style.backgroundColor = "silver";
+			
 		}
 
 		this.update = function(time){
@@ -98,7 +111,18 @@
 	document.onclick = function(e) {
 		playground.createNewCircle(e.x,e.y);
 	}
-	
+	function updateWindowSize(){
+		var width = window.innerWidth
+			|| document.documentElement.clientWidth
+			|| document.body.clientWidth;
+
+			var height = window.innerHeight
+			|| document.documentElement.clientHeight
+			|| document.body.clientHeight;
+
+			document.getElementById('svg').style.width = width;
+			document.getElementById('svg').style.height = height;
+	}
 	</script>
 
 </body>
