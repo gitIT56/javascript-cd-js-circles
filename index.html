@@ -4,14 +4,21 @@
 </head>
 <body onresize="updateWindowSize()">
 
-	<svg id="svg" xmlns="http://www.w3.org/2000/svg"></svg>
+	<svg id="svg" xmlns="http://www.w3.org/2000/svg">
+		<defs>
+			<linearGradient id="grad1" x1="0%" y1="0%" x2="100%" y2="0%">
+			  <stop offset="0%" style="stop-color:rgb(10, 160, 206);stop-opacity:1" />
+			  <stop offset="100%" style="stop-color:#25467a;stop-opacity:1" />
+			</linearGradient>
+		  </defs>
+	</svg>
 
 	<script>
 	function Circle(cx, cy, html_id)
 	{
 		var html_id = html_id;
 		this.info = { cx: cx,  cy: cy };
-		var radius = 10;
+		this.radius = 10;
 		//private function that generates a random number
 		var randomNumberBetween = function(min, max){
 			return Math.random()*(max-min) + min;
@@ -28,9 +35,9 @@
 			var circle = makeSVG('circle', 
 				{ 	cx: this.info.cx,
 				  	cy: this.info.cy,
-				  	r:  radius,
+				  	r:  this.radius,
 				  	id: html_id,
-				  	style: "fill: black"
+				  	style: "fill: url(#grad1)"
 				});
 
 			document.getElementById('svg').appendChild(circle);
@@ -49,27 +56,29 @@
 			
 		}
 
-		this.update = function(time){
+		this.update = function(time,new_radius){
 			var el = document.getElementById(html_id);
 
 			//see if the circle is going outside the browser. if it is, reverse the velocity
 			//console.log(radius);
-			if( this.info.cx > document.body.clientWidth + radius / 2|| this.info.cx < radius)
+			if( this.info.cx > document.body.clientWidth + this.radius / 2|| this.info.cx < this.radius)
 			{
 				this.info.velocity.x = this.info.velocity.x * -1;
 			}
-			if( this.info.cy > document.body.clientHeight + radius / 2 || this.info.cy < radius)
+			if( this.info.cy > document.body.clientHeight + this.radius / 2 || this.info.cy < this.radius)
 			{
 				this.info.velocity.y = this.info.velocity.y * -1;
 			}
 
 			this.info.cx = this.info.cx + this.info.velocity.x*time;
 			this.info.cy = this.info.cy + this.info.velocity.y*time;
+			this.radius = new_radius;
+			
 
 			el.setAttribute("cx", this.info.cx);
 			el.setAttribute("cy", this.info.cy);
+			el.setAttribute("r", this.radius);
 		}
-
 		//creates the SVG element and returns it
 		var makeSVG = function(tag, attrs) {
 	        var el= document.createElementNS('http://www.w3.org/2000/svg', tag);
@@ -87,12 +96,13 @@
 	{
 		var counter = 0;  //counts the number of circles created
 		var circles = [ ]; //array that will hold all the circles created in the app
+		var new_radius = 10;
 
-		//a loop that updates the circle's position on the screen
+		//a loop that updates the circle's position on the screen and it's radius if mouse down
 		this.loop = function(){
 			for(circle in circles)
 			{
-				circles[circle].update(1);
+				circles[circle].update(1,new_radius);
 			}
 		}
 
@@ -104,6 +114,21 @@
 
 		//create one circle when the game starts
 		this.createNewCircle(document.body.clientWidth/2, document.body.clientHeight/2);
+		var mousedown_time = 0;
+
+		function getTime(){
+			var date = new Date();
+			return date.getTime();
+		}
+
+		document.onmousedown = function(e){
+			mousedown_time = getTime();
+		}
+		document.onmouseup = function(e){
+			var time_pressed = (getTime() - mousedown_time) / 1000;
+			new_radius += time_pressed;
+			console.log('You held your mouse down for', time_pressed, 'miliseconds.');
+		}
 	}
 
 	var playground = new PlayGround();
@@ -124,6 +149,9 @@
 			document.getElementById('svg').style.width = width;
 			document.getElementById('svg').style.height = height;
 	}
+	
+
+			
 	</script>
 
 </body>
